@@ -8,6 +8,12 @@ output: github_document
 ```{r}
 library(tidyverse)
 library(ggridges)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
 ```
 
 ```{r}
@@ -38,14 +44,6 @@ weather_df %>%
   geom_point()
 ```
 
-you can save ggplots
-```{r}
-ggp_tmax_tmin =
-  ggplot(aes(x = tmin, y = tmax)) + 
-  geom_point()
-
-ggp_tmax_tmin
-```
 
 
 ```{r}
@@ -127,6 +125,12 @@ weather_df %>%
   ggplot(aes(x = tmax, y = name)) + geom_density_ridges(alpha = .8, scake = .8)
 ```
 
+## embedding plots
+```{r,fig.width = 12}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = .3)
+```
 
 
 

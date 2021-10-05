@@ -20,6 +20,12 @@ library(tidyverse)
 
 ``` r
 library(ggridges)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
 ```
 
 ``` r
@@ -80,3 +86,189 @@ weather_df
     ##  9 CentralPark_NY USW00094728 2017-01-09     0  -4.9  -9.9
     ## 10 CentralPark_NY USW00094728 2017-01-10     0   7.8  -6  
     ## # … with 1,085 more rows
+
+# scatterplot
+
+tmax vs tmin
+
+``` r
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-3-1.png" width="90%" />
+
+``` r
+ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-4-1.png" width="90%" />
+
+let’s make one more scatterplot
+
+``` r
+ggplot(weather_df, aes(x = date, y = tmax)) + 
+  geom_point(aes(size = prcp), alpha = .5) +
+  geom_smooth() + 
+  facet_grid(. ~ name)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+    ## Warning: Removed 3 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 3 rows containing missing values (geom_point).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-5-1.png" width="90%" />
+
+## use data manlpulation as part of this
+
+``` r
+weather_df %>%
+  filter(name == "CentralPark_NY") %>%
+  mutate(
+    tmax = tmax * (9/5) + 32,
+    tmin = tmin * (9/5) + 32 
+  ) %>%
+  ggplot(aes(x = tmin,y = tmax)) +
+  geom_point()
+```
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-6-1.png" width="90%" />
+
+## stacking geoms
+
+``` r
+ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_smooth(se = FALSE) 
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+    ## Warning: Removed 3 rows containing non-finite values (stat_smooth).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-7-1.png" width="90%" />
+
+``` r
+ggplot(weather_df, aes(x = tmax, y = tmin)) + 
+  geom_bin_2d()
+```
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_bin2d).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-8-1.png" width="90%" />
+
+## Univeriate plots
+
+``` r
+ggplot(weather_df, aes(x = tmax)) + 
+  geom_histogram()
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 3 rows containing non-finite values (stat_bin).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-9-1.png" width="90%" />
+
+``` r
+weather_df %>%
+  ggplot(aes(x = tmax, fill = name))+
+  geom_histogram()
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 3 rows containing non-finite values (stat_bin).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-10-1.png" width="90%" />
+
+``` r
+  facet_grid(. ~ name)
+```
+
+    ## <ggproto object: Class FacetGrid, Facet, gg>
+    ##     compute_layout: function
+    ##     draw_back: function
+    ##     draw_front: function
+    ##     draw_labels: function
+    ##     draw_panels: function
+    ##     finish_data: function
+    ##     init_scales: function
+    ##     map_data: function
+    ##     params: list
+    ##     setup_data: function
+    ##     setup_params: function
+    ##     shrink: TRUE
+    ##     train_scales: function
+    ##     vars: function
+    ##     super:  <ggproto object: Class FacetGrid, Facet, gg>
+
+``` r
+weather_df %>%
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_density(alpha = .3)
+```
+
+    ## Warning: Removed 3 rows containing non-finite values (stat_density).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-11-1.png" width="90%" />
+
+``` r
+weather_df %>%
+  ggplot(aes(x = name, y = tmax)) + geom_boxplot()
+```
+
+    ## Warning: Removed 3 rows containing non-finite values (stat_boxplot).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-12-1.png" width="90%" />
+
+some people like violin plots
+
+``` r
+weather_df %>%
+  ggplot(aes(x = name, y = tmax)) + geom_violin()
+```
+
+    ## Warning: Removed 3 rows containing non-finite values (stat_ydensity).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-13-1.png" width="90%" />
+
+what baout rigdes …
+
+``` r
+weather_df %>%
+  ggplot(aes(x = tmax, y = name)) + geom_density_ridges(alpha = .8, scake = .8)
+```
+
+    ## Warning: Ignoring unknown parameters: scake
+
+    ## Picking joint bandwidth of 1.84
+
+    ## Warning: Removed 3 rows containing non-finite values (stat_density_ridges).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-14-1.png" width="90%" />
+
+## embedding plots
+
+``` r
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = .3)
+```
+
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
+<img src="viz_part1_files/figure-gfm/unnamed-chunk-15-1.png" width="90%" />
