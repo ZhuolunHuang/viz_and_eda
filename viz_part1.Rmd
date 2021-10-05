@@ -89,5 +89,44 @@ ggplot(weather_df, aes(x = tmax, y = tmin)) +
   geom_bin_2d()
 ```
 
+## Univeriate plots
+```{r}
+ggplot(weather_df, aes(x = tmax)) + 
+  geom_histogram()
+```
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmax, fill = name))+
+  geom_histogram()
+  facet_grid(. ~ name)
+```
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_density(alpha = .3)
+```
+
+```{r}
+weather_df %>%
+  ggplot(aes(x = name, y = tmax)) + geom_boxplot()
+
+```
+
+some people like violin plots 
+```{r}
+weather_df %>%
+  ggplot(aes(x = name, y = tmax)) + geom_violin()
+
+```
+
+what baout rigdes ... 
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmax, y = name)) + geom_density_ridges(alpha = .8, scake = .8)
+```
+
+
 
 
