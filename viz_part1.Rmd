@@ -1,0 +1,93 @@
+---
+title: "ggplot 1"
+author: "zhuolun"
+date: "10/5/2021"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(ggridges)
+```
+
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USC00519397", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2017-01-01",
+    date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USC00519397 = "Waikiki_HA",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) %>%
+  select(name, id, everything())
+
+weather_df
+```
+
+# scatterplot
+tmax vs tmin
+```{r}
+weather_df %>%
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
+
+you can save ggplots
+```{r}
+ggp_tmax_tmin =
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point()
+
+ggp_tmax_tmin
+```
+
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+```
+
+
+let's make one more scatterplot
+```{r}
+ggplot(weather_df, aes(x = date, y = tmax)) + 
+  geom_point(aes(size = prcp), alpha = .5) +
+  geom_smooth() + 
+  facet_grid(. ~ name)
+```
+
+## use data manlpulation as part of this 
+```{r}
+weather_df %>%
+  filter(name == "CentralPark_NY") %>%
+  mutate(
+    tmax = tmax * (9/5) + 32,
+    tmin = tmin * (9/5) + 32 
+  ) %>%
+  ggplot(aes(x = tmin,y = tmax)) +
+  geom_point()
+```
+
+## stacking geoms 
+
+
+```{r}
+ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_smooth(se = FALSE) 
+```
+
+```{r}
+ggplot(weather_df, aes(x = tmax, y = tmin)) + 
+  geom_bin_2d()
+```
+
+
+
