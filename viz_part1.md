@@ -264,9 +264,9 @@ weather_df %>%
 ## embedding plots
 
 ``` r
-weather_df %>%
-  ggplot(aes(x = tmin, y = tmax, color = name)) + 
-  geom_point(alpha = .3)
+weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5)
 ```
 
     ## Warning: Removed 15 rows containing missing values (geom_point).

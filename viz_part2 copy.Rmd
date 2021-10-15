@@ -1,0 +1,152 @@
+---
+title: "ggplot 1"
+author: "zhuolun"
+date: "10/5/2021"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+```
+
+```{r}
+weather_df =  
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USC00519397", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2017-01-01",
+    date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USC00519397 = "Waikiki_HA",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10,
+    month = lubridate::floor_date(date, unit = "month")) %>%
+  select(name, id, everything())
+
+weather_df
+```
+
+## group by name
+```{r}
+weather_df %>%
+  group_by(name, month)
+```
+
+## count some things
+```{r}
+weather_df %>%
+  group_by(name, month) %>%
+  summarize(n_obs = n())
+
+weather_df %>% 
+  count(name)
+```
+
+it is nice that this is a data frame 
+
+`table` doesn't and that is bad
+
+```{r}
+weather_df %>%
+  pull(month) %>% 
+  table
+```
+
+```{r}
+weather_df %>%
+  janitor::tabyl(month,name)
+```
+
+## more general summarise
+let's count ,take means,look at SDs
+```{r}
+weather_df %>%
+  group_by(name,month) %>%
+  summarize(
+    n_obs = n(),
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    median_tmax = madian(tmax, na.rm = TRUE),
+    sd_tmax = sd(tmax, na.rm = TRUE)
+  ) %>% 
+  ggplot()
+```
+
+```{r}
+weather_df %>%
+  group_by(month) %>%
+  summarize(
+    mean_tmax = mean(tmax,na.rm = TRUE),
+    mean_prec = mean(prcp, na.rm = TRUE),
+    median_tmax = median(tmax,na.rm = TRUE),
+    sd_tmax = sd(tmax,na.rm = TRUE)) %>% 
+  
+```
+
+```{r}
+weather_df %>%
+  group_by(name) %>%
+  summarize(
+    nobs()
+    mean_tmax = mean(tmax,na.rm = TRUE),
+```
+
+## group mutate
+
+```{r}
+weather_df %>%
+  group_by(name) %>%
+  mutate(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    centered_tmax = tmax - mean_tmax) %>% 
+  ggplot(aes(x = date, y = centered_tmax, color = name)) + 
+    geom_point() 
+
+```
+
+```{r}
+weather_df %>%
+  group_by(name) %>%
+  mutate(temp_ranking = min_rank(desc(tmax))) %>% 
+  filter(temp_ranking < 2)
+```
+
+
+lagged variables
+
+```{r}
+weather_df %>%
+  group_by(name) %>%
+  mutate(
+    lagged_tmax = lag(tmax, n = 1),
+    tmax_diff = tmax - lagged_tmax
+  ) %>% 
+  summarize(
+    temp_change_sd = sd(temp_diff, na.rm = TRUE),
+    temp_change_max = max(temp_diff, na.rm = TRUE))
+```
+
+limitations
+
+what if my summary is a linear model ...
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  summarise(cor_tmin_tmax = cor(tmin,tamx, use='complete'))
+
+weather_df %>% 
+  filter(name = "CentarlPark_NY") %>% 
+  lm(tmax - tmin, data =.)
+```
+
