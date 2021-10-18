@@ -179,7 +179,7 @@ weather_df %>%
     name = factor(name),
     name = forcats::fct_relevel(name,c("Waikiki_HA"))
   ) %>% 
-  ggplot(aes(x = name,y = tmax,fill = name))+
+  ggplot(aes(x = name,y = tmax,fill = name)) +
   geom_violin(alpha = .5)
 ```
 
@@ -227,7 +227,7 @@ pulse_data =
   arrange(id, visit)
 
 ggplot(pulse_data, aes(x = visit, y = bdi)) + 
-  geom_boxplot()
+  geom_boxplot() +
 ```
 
 ```{r}
